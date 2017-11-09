@@ -22,13 +22,13 @@ def getSentenceFeature(tokens, wordVectors, sentence):
     
     sentVector = np.zeros((wordVectors.shape[1],))
     
-    ### YOUR CODE HERE
-    raise NotImplementedError
-    ### END YOUR CODE
+    words = sentence.split(' ')
+    wordIndices = [tokens[word] for word in words]
+    sentVector = np.sum(wordVectors[wordIndices], axis=0) / len(words)
     
     return sentVector
 
-def softmaxRegression(features, labels, weights, regularization = 0.0, nopredictions = False):
+def softmaxRegression(features, labels, weights, regularization=0.0, nopredictions = False):
     """ Softmax Regression """
     # Implement softmax regression with weight regularization.        
     
@@ -53,10 +53,14 @@ def softmaxRegression(features, labels, weights, regularization = 0.0, nopredict
     # A vectorized implementation of    1/N * sum(cross_entropy(x_i, y_i)) + 1/2*|w|^2
     cost = np.sum(-np.log(prob[range(N), labels])) / N 
     cost += 0.5 * regularization * np.sum(weights ** 2)
-    
-    ### YOUR CODE HERE: compute the gradients and predictions
-    raise NotImplementedError
-    ### END YOUR CODE
+
+    if len(features.shape) > 1:
+        pred = np.argmax(prob, axis=1)
+    else:
+        pred = np.argmax(prob)
+
+    grad = features.T.dot((prob - labels)) / N
+    grad += regularization * weights
     
     if nopredictions:
         return cost, grad
@@ -91,15 +95,16 @@ def sanity_check():
     dummy_weights = 0.1 * np.random.randn(dimVectors, 5)
     dummy_features = np.zeros((10, dimVectors))
     dummy_labels = np.zeros((10,), dtype=np.int32)    
-    for i in xrange(10):
+    for i in range(10):
         words, dummy_labels[i] = dataset.getRandomTrainSentence()
         dummy_features[i, :] = getSentenceFeature(tokens, wordVectors, words)
-    print "==== Gradient check for softmax regression ===="
+    print(dummy_labels)
+    print("==== Gradient check for softmax regression ====")
     gradcheck_naive(lambda weights: softmaxRegression(dummy_features,
         dummy_labels, weights, 1.0, nopredictions = True), dummy_weights)
 
-    print "\n=== Results ==="
-    print softmaxRegression(dummy_features, dummy_labels, dummy_weights, 1.0)
+    print("\n=== Results ===")
+    print(softmaxRegression(dummy_features, dummy_labels, dummy_weights, 1.0))
 
 if __name__ == "__main__":
     sanity_check()
