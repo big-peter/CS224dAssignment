@@ -23,9 +23,9 @@ def xavier_weight_init():
     Returns:
       out: tf.Tensor of specified shape sampled from Xavier distribution.
     """
-    ### YOUR CODE HERE
-    raise NotImplementedError
-    ### END YOUR CODE
+    indices = np.indices(shape, dtype=np.float32) + 1
+    array = np.sqrt(6.0) / np.sqrt(np.sum(indices, axis=0))
+    out = tf.convert_to_tensor(array)
     return out
   # Returns defined initializer function.
   return _xavier_initializer
@@ -34,7 +34,7 @@ def test_initialization_basic():
   """
   Some simple tests for the initialization.
   """
-  print "Running basic tests..."
+  print("Running basic tests...")
   xavier_initializer = xavier_weight_init()
   shape = (1,)
   xavier_mat = xavier_initializer(shape)
@@ -43,7 +43,7 @@ def test_initialization_basic():
   shape = (1, 2, 3)
   xavier_mat = xavier_initializer(shape)
   assert xavier_mat.get_shape() == shape
-  print "Basic (non-exhaustive) Xavier initialization tests pass\n"
+  print("Basic (non-exhaustive) Xavier initialization tests pass\n")
 
 def test_initialization():
   """ 
@@ -52,10 +52,14 @@ def test_initialization():
   This function will not be called by the autograder, nor will
   your tests be graded.
   """
-  print "Running your tests..."
-  ### YOUR CODE HERE
-  raise NotImplementedError
-  ### END YOUR CODE  
+  print("Running your tests...")
+  xavier_initializer = xavier_weight_init()
+  shape = (1, 2, 3)
+  xavier_mat = xavier_initializer(shape)
+  with tf.Session() as sess:
+    print(xavier_mat.eval())
+
 
 if __name__ == "__main__":
     test_initialization_basic()
+    # test_initialization()
